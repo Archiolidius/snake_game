@@ -10,14 +10,13 @@ $(document).ready(function () {
         var direction;
         var snake_array;
         var cell_size = 10;
-        var speed = 100;
+        var speed = 75;
         var target_x;
         var target_y;
-        var score=0;
+        var score = 0;
 
         function init() {
-            direction = 'rigth';
-
+            direction = 'left';
             create_target();
             snake();
             setInterval(function () {
@@ -28,10 +27,10 @@ $(document).ready(function () {
         init();
 
         function snake() {
-            length = 6;
+            length = 3;
             var start_y = 100; // начальное положение у
             snake_array = [];
-            for (var i = 1; i <= length; i++) {
+            for (var i = w / 10; i <= length + (w / 10); i++) {
                 snake_array.push({x:i * cell_size, y:start_y});
             }
         }
@@ -39,27 +38,21 @@ $(document).ready(function () {
         function draw_snake() {
 
             //Рисуем canvas
-            ctx.fillStyle = "white";
+            ctx.fillStyle = "#C3D9FF";
             ctx.fillRect(0, 0, w, h);
             ctx.strokeStyle = "black";
             ctx.strokeRect(0, 0, w, h);
-
             //canvas
-
-            //выводим текст
-            ctx.fillStyle = "#00F";
-            ctx.strokeStyle = "#F00";
-            ctx.font = "italic 20pt Arial";
-            ctx.fillText("Очки: "+score, 20, 50);
-            //выводим текст
             cur_x = snake_array[0].x;
             cur_y = snake_array[0].y;
+
             for (var i = 0; i < length; i++) {
-                ctx.fillStyle = "white";
+                ctx.fillStyle = "#993300";
                 ctx.fillRect(snake_array[i].x, snake_array[i].y, cell_size, cell_size);
-                ctx.strokeStyle = "black";
+                ctx.strokeStyle = "#330000";
                 ctx.strokeRect(snake_array[i].x, snake_array[i].y, cell_size, cell_size);
             }
+
             if (direction == 'rigth') {
                 cur_x += 10;
             }
@@ -72,25 +65,28 @@ $(document).ready(function () {
             if (direction == 'down') {
                 cur_y += 10;
             }
+            for (var i = 1; i < length; i++) {
+                if (snake_array[i].x == cur_x && snake_array[i].y == cur_y) {
+                    speed = speed + 100000;
+                    init();
+                    score = 0;
+                    $('.score').html('Очки:' + score);
+                }
+            }
             var tail = snake_array.pop(); //pops out the last cell
             tail.x = cur_x;
             tail.y = cur_y;
             //проверяем столкновение с точкой
+
             if (cur_x / 10 == target_x && cur_y / 10 == target_y) {
                 snake_array.push({x:cur_x, y:cur_y});
                 length++;
                 create_target();
                 score++;
-
+                $('.score').html('Очки:' + score);
             }
             //проверяем столкновение
             snake_array.unshift(tail);
-            /*for (var i = 0; i <= length; i++) {
-
-             ctx.fillRect(snake_array[i].x * cell_size, snake_array[i].y * cell_size, cell_size, cell_size);
-             ctx.strokeStyle = "black";
-             ctx.strokeRect(snake_array[i].x * cell_size, snake_array[i].y * cell_size, cell_size, cell_size);
-             }*/
             draw_target(target_x, target_y);
             exceptions()
         }
@@ -105,17 +101,20 @@ $(document).ready(function () {
         }
 
         function draw_target(x, y) {
-            //ctx.fillRect(x * cell_size, y * cell_size, cell_size, cell_size);
+            ctx.fillStyle = "#00FF00";
+            ctx.fillRect(x * cell_size, y * cell_size, cell_size, cell_size);
             ctx.strokeStyle = "black";
             ctx.strokeRect(x * cell_size, y * cell_size, cell_size, cell_size);
         }
 
         function exceptions() {
-            if (cur_x < 0 || cur_y < 0 || cur_x > w-10 || cur_y > h-10) {
+            if (cur_x < 0 || cur_y < 0 || cur_x > w - 10 || cur_y > h - 10) {
                 speed = speed + 100000;
                 init();
-                score=0;
+                score = 0;
+                $('.score').html('Очки:' + score);
             }
+
         }
 
         $(document).bind('keypress', function (e) {
@@ -130,6 +129,7 @@ $(document).ready(function () {
             if (e.keyCode == 115) {
                 if (direction != 'up')
                     direction = 'down';
+
             }
             if (e.keyCode == 97) {
                 if (direction != 'rigth')
