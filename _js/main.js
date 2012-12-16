@@ -13,16 +13,16 @@ $(document).ready(function () {
         var speed = 100;
         var target_x;
         var target_y;
+        var score=0;
 
         function init() {
             direction = 'rigth';
+
             create_target();
             snake();
             setInterval(function () {
                 draw_snake();
             }, speed);
-
-
         }
 
         init();
@@ -37,14 +37,25 @@ $(document).ready(function () {
         }
 
         function draw_snake() {
+
             //Рисуем canvas
             ctx.fillStyle = "white";
             ctx.fillRect(0, 0, w, h);
             ctx.strokeStyle = "black";
             ctx.strokeRect(0, 0, w, h);
+
+            //canvas
+
+            //выводим текст
+            ctx.fillStyle = "#00F";
+            ctx.strokeStyle = "#F00";
+            ctx.font = "italic 20pt Arial";
+            ctx.fillText("Очки: "+score, 20, 50);
+            //выводим текст
             cur_x = snake_array[0].x;
             cur_y = snake_array[0].y;
             for (var i = 0; i < length; i++) {
+                ctx.fillStyle = "white";
                 ctx.fillRect(snake_array[i].x, snake_array[i].y, cell_size, cell_size);
                 ctx.strokeStyle = "black";
                 ctx.strokeRect(snake_array[i].x, snake_array[i].y, cell_size, cell_size);
@@ -64,13 +75,22 @@ $(document).ready(function () {
             var tail = snake_array.pop(); //pops out the last cell
             tail.x = cur_x;
             tail.y = cur_y;
-            snake_array.unshift(tail);
-            for (var i = 0; i < length; i++) {
+            //проверяем столкновение с точкой
+            if (cur_x / 10 == target_x && cur_y / 10 == target_y) {
+                snake_array.push({x:cur_x, y:cur_y});
+                length++;
+                create_target();
+                score++;
 
-                ctx.fillRect(snake_array[i].x * cell_size, snake_array[i].y * cell_size, cell_size, cell_size);
-                ctx.strokeStyle = "black";
-                ctx.strokeRect(snake_array[i].x * cell_size, snake_array[i].y * cell_size, cell_size, cell_size);
             }
+            //проверяем столкновение
+            snake_array.unshift(tail);
+            /*for (var i = 0; i <= length; i++) {
+
+             ctx.fillRect(snake_array[i].x * cell_size, snake_array[i].y * cell_size, cell_size, cell_size);
+             ctx.strokeStyle = "black";
+             ctx.strokeRect(snake_array[i].x * cell_size, snake_array[i].y * cell_size, cell_size, cell_size);
+             }*/
             draw_target(target_x, target_y);
             exceptions()
         }
@@ -78,22 +98,23 @@ $(document).ready(function () {
         function create_target() {
             var max = h / 10;
             var min = 0;
-            var rand = Math.round(Math.random() * 10);
+            var rand = Math.round(Math.random() * 59);
             target_x = rand;
             target_y = rand;
-            draw_target(target_x, target_y);
+
         }
 
         function draw_target(x, y) {
-            ctx.fillRect(x * cell_size, y * cell_size, cell_size, cell_size);
+            //ctx.fillRect(x * cell_size, y * cell_size, cell_size, cell_size);
             ctx.strokeStyle = "black";
             ctx.strokeRect(x * cell_size, y * cell_size, cell_size, cell_size);
         }
 
         function exceptions() {
-            if (cur_x < 0 || cur_y < 0 || cur_x > w || cur_y > h) {
+            if (cur_x < 0 || cur_y < 0 || cur_x > w-10 || cur_y > h-10) {
                 speed = speed + 100000;
                 init();
+                score=0;
             }
         }
 
