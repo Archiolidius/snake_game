@@ -9,17 +9,18 @@ $(document).ready(function () {
         var w = $('#canvas_snake').width();
         var direction;
         var snake_array;
-        var cell_size = 10;
-        var speed = 75;
+        var cell_size = 20;
+        var speed = 85;
         var target_x;
         var target_y;
         var score = 0;
+        var intervalID;
 
         function init() {
             direction = 'left';
             create_target();
             snake();
-            setInterval(function () {
+            intervalID = setInterval(function () {
                 draw_snake();
             }, speed);
         }
@@ -27,10 +28,11 @@ $(document).ready(function () {
         init();
 
         function snake() {
+
             length = 3;
-            var start_y = 100; // начальное положение у
+            var start_y = 0; // начальное положение у
             snake_array = [];
-            for (var i = w / 10; i <= length + (w / 10); i++) {
+            for (var i = w / cell_size; i < length + (w / cell_size); i++) {
                 snake_array.push({x:i * cell_size, y:start_y});
             }
         }
@@ -54,20 +56,21 @@ $(document).ready(function () {
             }
 
             if (direction == 'rigth') {
-                cur_x += 10;
+                cur_x += cell_size;
             }
             if (direction == 'left') {
-                cur_x -= 10;
+                cur_x -= cell_size;
             }
             if (direction == 'up') {
-                cur_y -= 10;
+                cur_y -= cell_size;
             }
             if (direction == 'down') {
-                cur_y += 10;
+                cur_y += cell_size;
             }
             for (var i = 1; i < length; i++) {
                 if (snake_array[i].x == cur_x && snake_array[i].y == cur_y) {
-                    speed = speed + 100000;
+                    //speed = speed + 100000;
+                    clearInterval(intervalID);
                     init();
                     score = 0;
                     $('.score').html('Очки:' + score);
@@ -78,11 +81,13 @@ $(document).ready(function () {
             tail.y = cur_y;
             //проверяем столкновение с точкой
 
-            if (cur_x / 10 == target_x && cur_y / 10 == target_y) {
+            if (cur_x / cell_size == target_x && cur_y / cell_size == target_y) {
                 snake_array.push({x:cur_x, y:cur_y});
                 length++;
                 create_target();
                 score++;
+
+
                 $('.score').html('Очки:' + score);
             }
             //проверяем столкновение
@@ -92,12 +97,10 @@ $(document).ready(function () {
         }
 
         function create_target() {
-            var max = h / 10;
-            var min = 0;
-            var rand = Math.round(Math.random() * 59);
+            var max = h / cell_size;
+            var rand = Math.round(Math.random() * (max - 1));
             target_x = rand;
             target_y = rand;
-
         }
 
         function draw_target(x, y) {
@@ -108,8 +111,9 @@ $(document).ready(function () {
         }
 
         function exceptions() {
-            if (cur_x < 0 || cur_y < 0 || cur_x > w - 10 || cur_y > h - 10) {
-                speed = speed + 100000;
+            if (cur_x < 0 || cur_y < 0 || cur_x > w - cell_size || cur_y > h - cell_size) {
+                //speed = speed + 100000;
+                clearInterval(intervalID);
                 init();
                 score = 0;
                 $('.score').html('Очки:' + score);
@@ -118,23 +122,50 @@ $(document).ready(function () {
         }
 
         $(document).bind('keypress', function (e) {
-            if (e.keyCode == 119) {
-                if (direction != 'down')
-                    direction = 'up';
+            switch (e.keyCode) {
+                case 119:
+                {
+                    if (direction != 'down')
+                        direction = 'up';
+                    break;
+                }
+                case 100:
+                {
+                    if (direction != 'left')
+                        direction = 'rigth';
+                    break;
+                }
+                case 115:
+                {
+                    if (direction != 'up')
+                        direction = 'down';
+                    break;
+                }
+                case 97:
+                {
+                    if (direction != 'rigth')
+                        direction = 'left';
+                    break;
+                }
             }
-            if (e.keyCode == 100) {
-                if (direction != 'left')
-                    direction = 'rigth';
-            }
-            if (e.keyCode == 115) {
-                if (direction != 'up')
-                    direction = 'down';
+            /*if (e.keyCode == 119) {
+             if (direction != 'down')
+             direction = 'up';
+             }
+             if (e.keyCode == 100) {
+             if (direction != 'left')
+             direction = 'rigth';
+             }
+             if (e.keyCode == 115) {
+             if (direction != 'up')
+             direction = 'down';
 
-            }
-            if (e.keyCode == 97) {
-                if (direction != 'rigth')
-                    direction = 'left';
-            }
+             }
+             if (e.keyCode == 97) {
+             if (direction != 'rigth')
+             direction = 'left';
+             }*/
+
         })
     }
 )
