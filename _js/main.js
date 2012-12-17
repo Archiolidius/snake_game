@@ -15,8 +15,11 @@ $(document).ready(function () {
         var target_y;
         var score = 0;
         var intervalID;
+        var img=new Image();
+        img.src='_img/1.png';
 
         function init() {
+
             direction = 'left';
             create_target();
             snake();
@@ -49,10 +52,14 @@ $(document).ready(function () {
             cur_y = snake_array[0].y;
 
             for (var i = 0; i < length; i++) {
-                ctx.fillStyle = "#993300";
+
+                /*ctx.fillStyle = "#993300";
                 ctx.fillRect(snake_array[i].x, snake_array[i].y, cell_size, cell_size);
                 ctx.strokeStyle = "#330000";
-                ctx.strokeRect(snake_array[i].x, snake_array[i].y, cell_size, cell_size);
+                ctx.strokeRect(snake_array[i].x, snake_array[i].y, cell_size, cell_size);*/
+                ctx.drawImage(img, snake_array[i].x, snake_array[i].y, cell_size, cell_size);
+
+
             }
 
             if (direction == 'rigth') {
@@ -104,10 +111,11 @@ $(document).ready(function () {
         }
 
         function draw_target(x, y) {
-            ctx.fillStyle = "#00FF00";
+            /*ctx.fillStyle = "#00FF00";
             ctx.fillRect(x * cell_size, y * cell_size, cell_size, cell_size);
             ctx.strokeStyle = "black";
-            ctx.strokeRect(x * cell_size, y * cell_size, cell_size, cell_size);
+            ctx.strokeRect(x * cell_size, y * cell_size, cell_size, cell_size);*/
+            ctx.drawImage(img, x * cell_size, y * cell_size, cell_size, cell_size);
         }
 
         function exceptions() {
