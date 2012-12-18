@@ -1,30 +1,38 @@
 function game() {
-
     var canvas = $('#canvas_snake')[0];
     var ctx = canvas.getContext('2d');
+    var h = $('#canvas_snake').height();
+    var w = $('#canvas_snake').width();
     var cur_x; //текущие координаты
     var cur_y;
     var length; //текущая длина змейки
-    var h = $('#canvas_snake').height();
-    var w = $('#canvas_snake').width();
     var direction;
     var snake_array;
     var cell_size = 20;
-    var speed = 80;
+    var speed = 85;
     var target_x;
     var target_y;
     var score = 0;
     var intervalID;
     var sound_target;
     var sound_fon;
-    $('.score').click(function(){one()});
+    var rand1_x;
+    var rand1_y;
+    var fon = new Image();  // Создание нового объекта ихображения
+    fon.src = '_img/fon.jpg';
+    var target = new Image();
+    target.src = '_img/target.jpg';
+    var snake_img = new Image();
+    snake_img.src = '_img/snake.png';
+    var target_img = new Image();
+    target_img.src = '_img/target.png';
 
     function init() {
-
         direction = 'left';
-        create_target();
         snake();
-        sound()
+        create_target();
+        sound();
+
         intervalID = setInterval(function () {
             draw_snake();
         }, speed);
@@ -33,8 +41,7 @@ function game() {
     init();
 
     function snake() {
-
-        length = 3;
+        length = 10;
         var start_y = 0; // начальное положение у
         snake_array = [];
         for (var i = w / cell_size; i < length + (w / cell_size); i++) {
@@ -43,24 +50,13 @@ function game() {
     }
 
     function draw_snake() {
+        ctx.drawImage(fon, 0,0);
 
-        //Рисуем canvas
-        ctx.fillStyle = "#C3D9FF";
-        ctx.fillRect(0, 0, w, h);
-        ctx.strokeStyle = "black";
-        ctx.strokeRect(0, 0, w, h);
-        //canvas
         cur_x = snake_array[0].x;
         cur_y = snake_array[0].y;
 
         for (var i = 0; i < length; i++) {
-
-            ctx.fillStyle = "#993300";
-            ctx.fillRect(snake_array[i].x, snake_array[i].y, cell_size, cell_size);
-            ctx.strokeStyle = "#330000";
-            ctx.strokeRect(snake_array[i].x, snake_array[i].y, cell_size, cell_size);
-
-
+            ctx.drawImage(snake_img, snake_array[i].x, snake_array[i].y, cell_size, cell_size);
         }
 
         if (direction == 'rigth') {
@@ -79,7 +75,10 @@ function game() {
             if (snake_array[i].x == cur_x && snake_array[i].y == cur_y) {
                 //speed = speed + 100000;
                 clearInterval(intervalID);
+                snake();
                 init();
+                cur_x = snake_array[0].x;
+                cur_y = snake_array[0].y;
                 score = 0;
                 $('.score').html('Очки:' + score);
                 sound_fon.pause();
@@ -95,10 +94,9 @@ function game() {
             length++;
             create_target();
             score++;
+
             sound_target = new Audio('media/3.ogg');
-
             sound_target.play();
-
             $('.score').html('Очки:' + score);
         }
         //проверяем столкновение
@@ -109,17 +107,28 @@ function game() {
 
     function create_target() {
         var max = h / cell_size;
-        var rand = Math.round(Math.random() * (max - 1));
-        target_x = rand;
-        target_y = rand;
+        var rand_x;
+        while (rand1_x == (rand_x = Math.round(Math.random() * (max - 1)))) {
+            rand1_x = rand_x;
+        }
+        var rand_y;
+        while (rand1_y == (rand_y = Math.round(Math.random() * (max - 1)))) {
+            rand1_y = rand_y;
+        }
+        target_x = rand_x;
+        target_y = rand_y;
+        for (var i = 0; i < length - 1; i++) {
+            if (snake_array[i].x / cell_size == target_x && snake_array[i].y / cell_size == target_y) {
+                target_x = Math.round(Math.random() * (max - 1));
+                target_y = Math.round(Math.random() * (max - 1));
+            }
+        }
+
 
     }
 
     function draw_target(x, y) {
-        ctx.fillStyle = "#00FF00";
-        ctx.fillRect(x * cell_size, y * cell_size, cell_size, cell_size);
-        ctx.strokeStyle = "black";
-        ctx.strokeRect(x * cell_size, y * cell_size, cell_size, cell_size);
+        ctx.drawImage(target_img, x * cell_size, y * cell_size, cell_size, cell_size);
     }
 
     function exceptions() {
@@ -211,7 +220,7 @@ function game() {
 
                 }
             }
-        }, 50);
+        }, 30);
     })
     /*if (e.keyCode == 119) {
      if (direction != 'down')
